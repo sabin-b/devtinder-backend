@@ -1,0 +1,38 @@
+{
+  "name": "devtinder_backend",
+  "version": "1.0.0",
+  "description": "clone of tinder for developers",
+  "main": "server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon  ./src/server.ts"
+  },
+  "keywords": [
+    "tinder",
+    "devtinder",
+    "backend",
+    "nodejs",
+    "express",
+    "mongodb",
+    "mern",
+    "react",
+    "reactjs",
+    "reactnative",
+    "reactnativejs",
+    "express",
+    "typescript"
+  ],
+  "author": "sabin.b",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.13.8",
+    "dotenv": "^16.4.7",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
