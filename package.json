@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon  ./src/server.ts"
+    "dev": "nodemon  ./src/server.ts",
+    "start": "node ./dist/server.js"
   },
   "keywords": [
     "tinder",
@@ -25,14 +26,30 @@
   "author": "sabin.b",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.8",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.8",
+    "@types/sanitize-html": "^2.13.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
     "nodemon": "^3.1.9",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.12.1",
+    "reflect-metadata": "^0.2.2",
+    "sanitize-html": "^2.14.0"
   }
 }
