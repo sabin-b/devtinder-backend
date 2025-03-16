@@ -1,5 +1,11 @@
 import { Expose, Transform } from "class-transformer";
-import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from "class-validator";
 import sanitizeHtml from "sanitize-html";
 import { StringValue } from "../../types/types";
 
@@ -12,6 +18,7 @@ export class SignupDto {
    * Must contain more than 3 characters.
    */
   @Expose()
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }: StringValue) =>
     value && value.length > 0
@@ -48,6 +55,7 @@ export class SignupDto {
    * Must be in valid email format.
    */
   @Expose()
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }: StringValue) =>
     value && value.length > 0
@@ -67,6 +75,7 @@ export class SignupDto {
    * Must contain at least 6 characters.
    */
   @Expose()
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }: StringValue) =>
     value && value.length > 0
@@ -88,6 +97,7 @@ export class SiginInDto {
    * The email address of the user.
    */
   @Expose()
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }: StringValue) =>
     value && value.length
@@ -103,6 +113,7 @@ export class SiginInDto {
    * The password of the user.
    */
   @Expose()
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }: StringValue) =>
     value && value.length

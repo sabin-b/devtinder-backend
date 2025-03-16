@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { verifyAuthUser } from "../../middleware";
-import { sendConnectionRequest } from "./connectionRequest.controller";
+import {
+  reviewConnectionRequest,
+  sendConnectionRequest,
+} from "./connectionRequest.controller";
 
 const connectionRequestRouter = Router();
 
@@ -9,6 +12,13 @@ connectionRequestRouter.post(
   "/send/:status/:receiverId",
   verifyAuthUser,
   sendConnectionRequest
+);
+
+//? review request (intreseted - ignored)
+connectionRequestRouter.post(
+  "/review/:status/:requestId",
+  verifyAuthUser,
+  reviewConnectionRequest
 );
 
 export default connectionRequestRouter;

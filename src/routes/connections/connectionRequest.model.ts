@@ -13,6 +13,7 @@ const connectionRequestSchema = new Schema<IConnectionRequest>(
     },
     status: {
       type: String,
+      required: true,
       enum: {
         values: Object.values(ConnectionStatus),
         message: "{VALUE} is not supported",

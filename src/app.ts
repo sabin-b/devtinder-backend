@@ -23,6 +23,11 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/request", connectionRequestRouter);
 
+//? global 404 handling
+app.use((req: Request, res: Response) => {
+  res.status(404).json({ message: "Sorry can't find that!" });
+});
+
 //? global error handling
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({

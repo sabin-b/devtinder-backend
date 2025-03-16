@@ -22,7 +22,7 @@ export const verifyAuthUser = async (
     const token = req.cookies.token;
 
     if (!token) {
-      return res.status(401).json({ message: "invalid token" });
+      return res.status(400).json({ message: "invalid token" });
     }
 
     const decodedToken = jwt.verify(token, process.env.AUTH_SECRET as string);
@@ -31,14 +31,14 @@ export const verifyAuthUser = async (
       : null;
 
     if (!userDetails) {
-      return res.json({ message: "token expired" });
+      return res.status(400).json({ message: "token expired" });
     }
 
     //? if valid get the user profile
     const user = await User.findById(userDetails._id);
 
     if (!user) {
-      return res.status(401).json({ message: "unauthorized" });
+      return res.status(404).json({ message: "user not found" });
     }
 
     // ? if user exits attached request object and forward to route

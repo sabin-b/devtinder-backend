@@ -18,6 +18,7 @@ export interface IUser {
   password: string;
   age?: number;
   gender?: Gender;
+  imageUrl?: string;
 }
 
 export interface IUserDocument extends IUser, Document {
@@ -29,6 +30,16 @@ export interface IUserDocument extends IUser, Document {
 export enum ConnectionStatus {
   "interested" = "interested",
   "ignored" = "ignored",
+  "rejected" = "rejected",
+  "accepted" = "accepted",
+}
+
+export enum SendConnectionStatus {
+  "interested" = "interested",
+  "ignored" = "ignored",
+}
+
+export enum ReviewConnectionStatus {
   "rejected" = "rejected",
   "accepted" = "accepted",
 }

@@ -24,6 +24,9 @@ const userSchema: Schema<IUserDocument> = new Schema(
       type: String,
       required: true,
     },
+    imageUrl: {
+      type: String,
+    },
     age: {
       type: Number,
       min: 18,

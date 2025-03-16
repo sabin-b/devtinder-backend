@@ -6,9 +6,21 @@ import {
   validationErrorHandler,
 } from "../../utils/helpers";
 import User from "../user/user.model";
-import { ConnectionRequestParamsDto } from "./connectionRequest.dto";
+import {
+  ReviewConnectionRequestParamsDto,
+  SendConnectionRequestParamsDto,
+} from "./connectionRequest.dto";
 import ConnectionRequest from "./connectionRequest.model";
 
+/**
+ * @description send a connection request
+ * @summary send a connection request to another user
+ * @tags Connections
+ * @param {Request} req - http request
+ * @param {Response} res - http response
+ * @param {NextFunction} next - error handler
+ * @returns {Promise<void>}
+ */
 export const sendConnectionRequest = async (
   req: Request,
   res: Response,
@@ -18,7 +30,7 @@ export const sendConnectionRequest = async (
     //? sanitize the params
 
     const requestParams = plainToInstance(
-      ConnectionRequestParamsDto,
+      SendConnectionRequestParamsDto,
       req.params,
       {
         enableImplicitConversion: true,
@@ -78,6 +90,61 @@ export const sendConnectionRequest = async (
     res.status(201).json({
       message: "connection request sent successfully",
       data: newConnection,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reviewConnectionRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //? sanitize the params
+    const requestParams = plainToInstance(
+      ReviewConnectionRequestParamsDto,
+      req.params,
+      {
+        enableImplicitConversion: true,
+        excludeExtraneousValues: true,
+        exposeUnsetFields: false,
+      }
+    );
+
+    const errors = await validate(requestParams);
+
+    if (errors && errors.length > 0) {
+      return res.status(400).json({
+        message: "invalid params",
+        errors: validationErrorHandler(errors),
+      });
+    }
+
+    //? check review connection found
+    const reviewConnectionReqExists = await ConnectionRequest.findOne({
+      _id: requestParams.requestId,
+      receiverId: req.authUser._id,
+      status: "interested",
+    });
+
+    if (!reviewConnectionReqExists) {
+      return res.status(400).json({ message: "there is no requests found" });
+    }
+
+    const updatedRequest = await ConnectionRequest.findByIdAndUpdate(
+      reviewConnectionReqExists._id,
+      {
+        status: requestParams.status,
+      },
+      {
+        returnDocument: "after",
+      }
+    );
+    res.status(202).send({
+      message: `connection request ${requestParams.status} successfully`,
+      data: updatedRequest,
     });
   } catch (error) {
     next(error);
