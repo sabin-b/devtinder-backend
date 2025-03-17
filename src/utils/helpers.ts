@@ -1,5 +1,5 @@
 import { ValidationError } from "class-validator";
-import { MongooseError, Types } from "mongoose";
+import { MongooseError } from "mongoose";
 
 export function globalErrorHandler(err: unknown): string {
   if (err instanceof Error) {
@@ -18,10 +18,10 @@ export function validationErrorHandler(errors: ValidationError[]) {
 }
 
 //? prevent request by same user
-export function handleSelfRequestErrorhandler(
-  dbUserId: Types.ObjectId,
-  userId_2: string
-) {
-  // const reqId = new Types.ObjectId(userId_2);
-  return dbUserId.equals(userId_2) ? true : false;
-}
+// export function validateMongoDbObjectId(
+//   dbUserId: Types.ObjectId,
+//   userId_2: string
+// ) {
+// const reqId = new Types.ObjectId(userId_2);
+//   return dbUserId.equals(userId_2) ? true : false;
+// }

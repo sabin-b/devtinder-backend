@@ -5,10 +5,12 @@ const connectionRequestSchema = new Schema<IConnectionRequest>(
   {
     senderId: {
       type: Schema.Types.ObjectId,
+      ref: "User", // making relations with user model
       required: true,
     },
     receiverId: {
       type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     status: {

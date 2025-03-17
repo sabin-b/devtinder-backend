@@ -2,19 +2,30 @@ import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { NextFunction, Request, Response } from "express";
 import { validationErrorHandler } from "../../utils/helpers";
-import { DeleteDto, UpdateDto, UpdatePasswordDto } from "./user.dto";
+import ConnectionRequest from "../connections/connectionRequest.model";
+import { UserFeedQueryStringDto } from "./user.dto";
 import User from "./user.model";
 
+const USER_DATA = [
+  "_id",
+  "firstName",
+  "lastName",
+  "emailId",
+  "imageUrl",
+  "age",
+  "gender",
+];
+
 /**
- * @description update an existing user
- * @summary update an existing user and return a success message
- * @tags Auth
+ * @description Return the connection requests made by other users to the logged in user
+ * @summary Return the connection requests made by other users to the logged in user
+ * @tags Connections
  * @param {Request} req - http request
  * @param {Response} res - http response
  * @param {NextFunction} next - error handler
  * @returns {Promise<void>}
  */
-export const updateUser = async (
+export const getReceivedRequests = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -22,146 +33,116 @@ export const updateUser = async (
   try {
     const currentActiveUser = req.authUser;
 
-    //? check the req.body values
-    const userInputs = plainToInstance(UpdateDto, req.body, {
-      enableImplicitConversion: true,
-      excludeExtraneousValues: true,
-      exposeUnsetFields: false,
-    });
+    //? get requests from db
+    const requests = await ConnectionRequest.find({
+      status: "interested",
+      receiverId: currentActiveUser._id,
+    }).populate("senderId", USER_DATA);
 
-    const errors = await validate(userInputs);
-
-    if (errors && errors.length > 0) {
-      return res.status(400).json({
-        message: "invalid inputs",
-        errors: validationErrorHandler(errors),
-      });
-    }
-
-    //? if user exits update their details
-    await User.findByIdAndUpdate(currentActiveUser._id, userInputs);
-
-    res.status(202).json({ message: "user details updated" });
+    res.status(200).json(requests);
   } catch (error) {
     next(error);
   }
 };
 
 /**
- * @description Return the user profile information
- * @summary Return the user profile information
- * @tags Auth
+ * @description Return the connections of the logged in user
+ * @summary Return the connections of the logged in user
+ * @tags Connections
  * @param {Request} req - http request
  * @param {Response} res - http response
  * @param {NextFunction} next - error handler
  * @returns {Promise<void>}
  */
-export const userProfile = async (
+export const getConnections = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    res.status(200).json(req.authUser);
+    const currentActiveUser = req.authUser;
+
+    //? get connections from db
+    const connections = await ConnectionRequest.find({
+      $or: [
+        { senderId: currentActiveUser._id, status: "accepted" },
+        { receiverId: currentActiveUser._id, status: "accepted" },
+      ],
+    })
+      .populate("senderId", USER_DATA)
+      .populate("receiverId", USER_DATA);
+
+    const data = connections.map(({ receiverId, senderId }) =>
+      currentActiveUser._id?.equals(senderId?._id) ? receiverId : senderId
+    );
+    res.status(200).json(data);
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
 
-export const updateUserPassword = async (
+export const getFeed = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    //? validate input fields
-    const userInputs = plainToInstance(UpdatePasswordDto, req.body, {
+    const loggedInUser = req.authUser;
+
+    const requestQuery = plainToInstance(UserFeedQueryStringDto, req.query, {
       enableImplicitConversion: true,
-      excludeExtraneousValues: true,
       exposeUnsetFields: false,
+      excludeExtraneousValues: true,
     });
 
-    const errors = await validate(userInputs);
+    const errors = await validate(requestQuery);
 
-    if (errors && errors.length > 0) {
+    if (errors && errors.length) {
       return res.status(400).json({
         message: "invalid inputs",
         errors: validationErrorHandler(errors),
       });
     }
 
-    //? logged in user from request object
-    const activeCurrentUser = req.authUser;
+    const limit = requestQuery.limit ?? 10;
+    const page = requestQuery.page ?? 1;
+    const skip = (page - 1) * limit;
 
-    // ? if old password is valid
-    const isPasswordValid = await activeCurrentUser.validatePassword(
-      userInputs.oldPassword
-    );
+    // Todo:
+    // wont be own card
+    // wont be their connections
+    // ignored connections
+    // send connection requests
 
-    if (!isPasswordValid) {
-      return res
-        .status(400)
-        .json({ message: "please enter the correct old password" });
-    }
+    const connectionRequests = await ConnectionRequest.find({
+      $or: [
+        {
+          senderId: loggedInUser._id,
+        },
+        {
+          receiverId: loggedInUser._id,
+        },
+      ],
+    })
+      .select(["senderId", "receiverId"])
+      .lean();
 
-    //? if valid update password on db
+    const hideAlreadyExistConnections = new Set(
+      connectionRequests.flatMap((req) => [
+        req.senderId?.toString(),
+        req.receiverId?.toString(),
+      ])
+    ).add(loggedInUser._id?.toString());
 
-    // ? before hash new passord
-    const hashNewPassword = await activeCurrentUser.hashPassword(
-      userInputs.newPassword
-    );
+    const users = await User.find({
+      _id: { $nin: Array.from(hideAlreadyExistConnections) },
+    })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .select(USER_DATA);
 
-    await User.findByIdAndUpdate(activeCurrentUser._id, {
-      password: hashNewPassword,
-    });
-
-    res.status(202).json({ message: "password updated successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * @description delete a user by id
- * @param {Request} req - http request
- * @param {Response} res - http response
- * @param {NextFunction} next - error handler
- * @returns {Promise<void>}
- */
-export const deleteUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const params = plainToInstance(DeleteDto, req.params, {
-      enableImplicitConversion: true,
-      excludeExtraneousValues: true,
-      exposeUnsetFields: false,
-    });
-
-    const errors = await validate(params);
-
-    if (errors && errors.length > 0) {
-      return res.status(400).json({
-        message: "invalid inputs",
-        errors: validationErrorHandler(errors),
-      });
-    }
-
-    //? check user exists in db
-    const userExists = await User.findById(params.id);
-
-    if (!userExists) {
-      return res.status(404).json({ message: "user not found" });
-    }
-
-    //? if user exists
-    await User.findByIdAndDelete(userExists._id);
-
-    //? send the response
-    res.status(202).json({ message: "user deleted" });
+    res.status(200).json(users);
   } catch (error) {
     next(error);
   }

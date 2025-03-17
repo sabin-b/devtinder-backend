@@ -1,10 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { NextFunction, Request, Response } from "express";
-import {
-  handleSelfRequestErrorhandler,
-  validationErrorHandler,
-} from "../../utils/helpers";
+import { validationErrorHandler } from "../../utils/helpers";
 import User from "../user/user.model";
 import {
   ReviewConnectionRequestParamsDto,
@@ -56,10 +53,12 @@ export const sendConnectionRequest = async (
     }
 
     //? if make connection request same user to self prevent that
-    const isSameUser = handleSelfRequestErrorhandler(
-      req.authUser._id!,
-      requestParams.receiverId
-    );
+    // const isSameUser = validateMongoDbObjectId(
+    //   req.authUser._id!,
+    //   requestParams.receiverId
+    // );
+
+    const isSameUser = req.authUser._id?.equals(requestParams.receiverId);
 
     if (isSameUser) {
       return res
@@ -96,6 +95,21 @@ export const sendConnectionRequest = async (
   }
 };
 
+/**
+ * @description Review a connection request made by another user
+ * @summary Review a connection request made by another user and update the status of the request
+ * @tags Connections
+ * @param {Request} req - http request
+ * @param {Response} res - http response
+ * @param {NextFunction} next - error handler
+ * @returns {Promise<void>}
+ * @example
+ * @review connection request
+ * @endpoint: /connections/review/:status/:requestId
+ * @method: patch
+ * @status: "accepted" or "rejected"
+ * @requestId: connection request id
+ */
 export const reviewConnectionRequest = async (
   req: Request,
   res: Response,

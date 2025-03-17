@@ -1,24 +1,20 @@
 import { Router } from "express";
 import { verifyAuthUser } from "../../middleware";
 import {
-  deleteUser,
-  updateUser,
-  updateUserPassword,
-  userProfile,
+  getConnections,
+  getFeed,
+  getReceivedRequests,
 } from "./user.controller";
 
 const userRouter = Router();
 
-//? user profile
-userRouter.get("/profile/view", verifyAuthUser, userProfile);
+//? check request received connections
+userRouter.get("/request/received", verifyAuthUser, getReceivedRequests);
 
-//? user update
-userRouter.patch("/profile/update", verifyAuthUser, updateUser);
+//? check own connection
+userRouter.get("/connections", verifyAuthUser, getConnections);
 
-//? user password update
-userRouter.patch("/profile/updatepassword", verifyAuthUser, updateUserPassword);
-
-//? user delete
-userRouter.delete("/profile/:id", deleteUser);
+//? all feed except own, and ignored,rejected,and not in my connection so far
+userRouter.get("/feed", verifyAuthUser, getFeed);
 
 export default userRouter;

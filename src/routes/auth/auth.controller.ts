@@ -21,6 +21,14 @@ export const signUp = async (
   next: NextFunction
 ) => {
   try {
+    //? check logged in user trying to create new user
+    const loggedInUser = req.authUser;
+
+    if (loggedInUser) {
+      return res.status(400).json({ message: "you are already loggedIn" });
+    }
+
+    //? sanitize the inputs
     const userInputs = plainToInstance(SignupDto, req.body, {
       enableImplicitConversion: true,
       excludeExtraneousValues: true,
@@ -96,7 +104,7 @@ export const signIn = async (
     const existingUser = await User.findOne({ emailId: userInputs.emailId });
 
     if (!existingUser) {
-      return res.status(404).json({ message: "invalid credentialsg" });
+      return res.status(404).json({ message: "invalid credentials" });
     }
 
     //? if exits check the password
@@ -135,5 +143,6 @@ export const signIn = async (
 export const signOut = (req: Request, res: Response) => {
   res
     .cookie("token", null, { expires: new Date(Date.now()) })
-    .send("logout successful");
+    .status(200)
+    .json({ message: "logout successfull" });
 };

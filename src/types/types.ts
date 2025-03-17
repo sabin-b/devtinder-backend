@@ -1,4 +1,4 @@
-import { Schema, Types } from "mongoose";
+import { PopulatedDoc, Types } from "mongoose";
 
 export enum Gender {
   "Male" = "male",
@@ -45,7 +45,7 @@ export enum ReviewConnectionStatus {
 }
 
 export interface IConnectionRequest {
-  senderId: Schema.Types.ObjectId;
-  receiverId: Schema.Types.ObjectId;
+  senderId: PopulatedDoc<IUser>;
+  receiverId: PopulatedDoc<IUser>;
   status: ConnectionStatus;
 }

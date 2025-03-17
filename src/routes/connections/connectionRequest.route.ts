@@ -15,7 +15,7 @@ connectionRequestRouter.post(
 );
 
 //? review request (intreseted - ignored)
-connectionRequestRouter.post(
+connectionRequestRouter.patch(
   "/review/:status/:requestId",
   verifyAuthUser,
   reviewConnectionRequest

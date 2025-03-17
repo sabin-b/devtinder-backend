@@ -35,7 +35,17 @@ export const verifyAuthUser = async (
     }
 
     //? if valid get the user profile
-    const user = await User.findById(userDetails._id);
+    const user = await User.findById(userDetails._id).select([
+      "_id",
+      "createdAt",
+      "updatedAt",
+      "firstName",
+      "lastName",
+      "emailId",
+      "age",
+      "gender",
+      "imageUrl",
+    ]);
 
     if (!user) {
       return res.status(404).json({ message: "user not found" });
