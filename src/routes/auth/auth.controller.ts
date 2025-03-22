@@ -122,11 +122,22 @@ export const signIn = async (
     //? success response
     res.cookie("token", token, {
       expires: new Date(new Date().setDate(new Date().getDate() + 1)),
+      secure: process.env.NODE_ENV === "PROD" ? true : false,
+      sameSite: "strict",
+      httpOnly: true,
     });
 
-    const successMessage =
-      "welcome to devTinder" + " " + existingUser.firstName;
-    res.status(200).json({ message: successMessage });
+    res.status(200).json({
+      message: "user login successfully",
+      data: {
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        emailId: existingUser.emailId,
+        imageUrl: existingUser.imageUrl,
+        age: existingUser.age,
+        gender: existingUser.gender,
+      },
+    });
   } catch (error) {
     next(error);
   }

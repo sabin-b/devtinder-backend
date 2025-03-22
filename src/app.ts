@@ -1,4 +1,6 @@
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import authRouter from "./routes/auth/auth.route";
@@ -8,8 +10,19 @@ import userRouter from "./routes/user/user.route";
 import swaggerDocs from "./swagger/swagger";
 import { globalErrorHandler } from "./utils/helpers";
 
+//? make permission to env variables to access
+dotenv.config();
+
 //? initialize the app
 const app = express();
+//
+//? make permission access api url
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true, //? allow set cookies to browser
+  })
+);
 
 //? make permission to json and formdata
 app.use(express.json(), express.urlencoded({ extended: true }));
@@ -35,7 +48,7 @@ app.use((req: Request, res: Response) => {
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({
     message:
-      process.env.NODE_ENV === "dev"
+      process.env.NODE_ENV === "DEV"
         ? globalErrorHandler(err)
         : "internal server error",
   });

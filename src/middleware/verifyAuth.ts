@@ -57,7 +57,7 @@ export const verifyAuthUser = async (
   } catch (error) {
     res.status(500).json({
       message:
-        process.env.NODE_ENV === "dev"
+        process.env.NODE_ENV === "DEV"
           ? globalErrorHandler(error)
           : "internal server error",
     });
