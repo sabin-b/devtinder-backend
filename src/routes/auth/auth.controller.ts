@@ -128,15 +128,7 @@ export const signIn = async (
     });
 
     res.status(200).json({
-      message: "user login successfully",
-      data: {
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-        emailId: existingUser.emailId,
-        imageUrl: existingUser.imageUrl,
-        age: existingUser.age,
-        gender: existingUser.gender,
-      },
+      message: "user loggedIn successfully",
     });
   } catch (error) {
     next(error);
