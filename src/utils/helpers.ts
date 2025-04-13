@@ -17,6 +17,16 @@ export function validationErrorHandler(errors: ValidationError[]) {
   }));
 }
 
+export function isMulterFile(obj: any): obj is Express.Multer.File {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    "originalname" in obj &&
+    "mimetype" in obj &&
+    "buffer" in obj
+  );
+}
+
 //? prevent request by same user
 // export function validateMongoDbObjectId(
 //   dbUserId: Types.ObjectId,

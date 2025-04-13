@@ -5,6 +5,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
+  MaxLength,
   Min,
   MinLength,
 } from "class-validator";
@@ -56,6 +58,39 @@ export class UpdateDto {
     message: "last Name not provided, it must contain at least 1 character",
   })
   lastName?: string;
+
+  /**
+   * The image of the user.
+   */
+  @Expose()
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  image?: string;
+
+  /**
+   * The publicId of the user.
+   */
+  @Expose()
+  @IsOptional()
+  @IsString()
+  imagePublicId?: string;
+  /**
+   * The about of the user.
+   */
+  @Expose()
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: StringValue) =>
+    value && value.length > 0
+      ? sanitizeHtml(value, {
+          allowedTags: [],
+          allowedAttributes: {},
+        }).trim()
+      : value
+  )
+  @MaxLength(200, { message: "about must be less than 200 characters long" })
+  about?: string;
 
   /**
    * The age of the user.

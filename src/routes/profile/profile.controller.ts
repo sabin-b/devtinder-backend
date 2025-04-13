@@ -1,6 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { NextFunction, Request, Response } from "express";
+import { cloudinary } from "../../config/cloudinary";
 import { validationErrorHandler } from "../../utils/helpers";
 import User from "../user/user.model";
 import { DeleteDto, UpdateDto, UpdatePasswordDto } from "./profile.dto";
@@ -21,9 +22,14 @@ export const updateUser = async (
 ) => {
   try {
     const currentActiveUser = req.authUser;
+    const inputs = {
+      ...req.body,
+      image: req.body.image || req.file?.path,
+      imagePublicId: req.file?.filename || undefined,
+    };
 
     //? check the req.body values
-    const userInputs = plainToInstance(UpdateDto, req.body, {
+    const userInputs = plainToInstance(UpdateDto, inputs, {
       enableImplicitConversion: true,
       excludeExtraneousValues: true,
       exposeUnsetFields: false,
@@ -38,10 +44,17 @@ export const updateUser = async (
       });
     }
 
+    //? remove old profile image from cloudinary ,when we upload new profile image
+    if (req.file && currentActiveUser.imagePublicId) {
+      await cloudinary.uploader.destroy(
+        currentActiveUser.imagePublicId as string
+      );
+    }
+
     //? if user exits update their details
     await User.findByIdAndUpdate(currentActiveUser._id, userInputs);
 
-    res.status(202).json({ message: "user details updated" });
+    res.status(202).json({ message: "profile details updated" });
   } catch (error) {
     next(error);
   }

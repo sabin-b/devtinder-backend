@@ -3,6 +3,7 @@ import { PopulatedDoc, Types } from "mongoose";
 export enum Gender {
   "Male" = "male",
   "FeMale" = "female",
+  "Other" = "other",
 }
 
 export type StringValue = {
@@ -19,7 +20,8 @@ export interface IUser {
   about?: string;
   age?: number;
   gender?: Gender;
-  imageUrl?: string;
+  image?: string;
+  imagePublicId?: string;
 }
 
 export interface IUserDocument extends IUser, Document {

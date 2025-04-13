@@ -1,13 +1,13 @@
 AuthRouter
 
-- POST /signup
-- POST /signin
-- POST /signout
+- POST /signup - completed
+- POST /signin - completed
+- POST /signout - completed
 
 Profile Router
 
-- GET /profile/view
-- PATCH /profile/edit
+- GET /profile/view - completed
+- PATCH /profile/edit - completed
 - PATCH /profile/password
 
 Connection Request Router

@@ -24,15 +24,17 @@ const userSchema: Schema<IUserDocument> = new Schema(
       type: String,
       required: true,
     },
-    imageUrl: {
+    image: {
       type: String,
     },
-    about: {
+    imagePublicId: {
       type: String,
     },
+    about: { type: String },
     age: {
       type: Number,
       min: 18,
+      max: 55,
     },
     gender: {
       type: String,

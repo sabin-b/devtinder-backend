@@ -41,10 +41,11 @@ export const verifyAuthUser = async (
       "updatedAt",
       "firstName",
       "lastName",
-      "emailId",
       "age",
       "gender",
-      "imageUrl",
+      "image",
+      "imagePublicId",
+      "about",
     ]);
 
     if (!user) {
