@@ -46,6 +46,7 @@ export const verifyAuthUser = async (
       "image",
       "imagePublicId",
       "about",
+      "emailId",
     ]);
 
     if (!user) {

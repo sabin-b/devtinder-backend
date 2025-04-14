@@ -52,9 +52,26 @@ export const updateUser = async (
     }
 
     //? if user exits update their details
-    await User.findByIdAndUpdate(currentActiveUser._id, userInputs);
+    const updatedUser = await User.findByIdAndUpdate(
+      currentActiveUser._id,
+      userInputs
+    ).select([
+      "_id",
+      "createdAt",
+      "updatedAt",
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "image",
+      "imagePublicId",
+      "about",
+      "emailId",
+    ]);
 
-    res.status(202).json({ message: "profile details updated" });
+    res
+      .status(202)
+      .json({ message: "profile details updated", user: updateUser });
   } catch (error) {
     next(error);
   }
