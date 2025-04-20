@@ -63,7 +63,7 @@ export const signUp = async (
       ...otherValues,
     });
 
-    res.status(201).json({ message: "user created" });
+    res.status(201).json({ message: "account creation completed" });
   } catch (error) {
     next(error);
   }
