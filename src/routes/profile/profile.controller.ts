@@ -133,8 +133,11 @@ export const updateUserPassword = async (
     //? logged in user from request object
     const activeCurrentUser = req.authUser;
 
+    //? find userDocument by Active User
+    const validUser = await User.findById(activeCurrentUser._id);
+
     // ? if old password is valid
-    const isPasswordValid = await activeCurrentUser.validatePassword(
+    const isPasswordValid = await validUser?.validatePassword(
       userInputs.oldPassword
     );
 
@@ -146,13 +149,14 @@ export const updateUserPassword = async (
 
     //? if valid update password on db
 
-    // ? before hash new passord
-    const hashNewPassword = await activeCurrentUser.hashPassword(
+    // ? before hash new password
+    const NewHashPassword = await activeCurrentUser.hashPassword(
       userInputs.newPassword
     );
+    
 
     await User.findByIdAndUpdate(activeCurrentUser._id, {
-      password: hashNewPassword,
+      password: NewHashPassword,
     });
 
     res.status(202).json({ message: "password updated successfully" });

@@ -108,10 +108,11 @@ export const signIn = async (
     }
 
     //? if exits check the password
-    const isValidPassword = await existingUser.validatePassword(
-      userInputs.password
+    const isValidPassword = await bcrypt.compare(
+      userInputs.password,
+      existingUser.password
     );
-
+    console.log(isValidPassword);
     if (!isValidPassword) {
       return res.status(404).json({ message: "invalid credentials" });
     }

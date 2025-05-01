@@ -117,9 +117,7 @@ export class SiginInDto {
   @IsString()
   @Transform(({ value }: StringValue) =>
     value && value.length
-      ? sanitizeHtml(value, { allowedAttributes: {}, allowedTags: [] })
-          .trim()
-          .toLowerCase()
+      ? sanitizeHtml(value, { allowedAttributes: {}, allowedTags: [] }).trim()
       : value
   )
   @MinLength(1, { message: "please enter the password" })
