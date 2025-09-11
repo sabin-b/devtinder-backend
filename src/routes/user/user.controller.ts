@@ -11,9 +11,10 @@ const USER_DATA = [
   "firstName",
   "lastName",
   "emailId",
-  "imageUrl",
   "age",
   "gender",
+  "image",
+  "about",
 ];
 
 /**
